@@ -1,0 +1,86 @@
+name: Deploy Website to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Replace admin password placeholder
+      run: |
+        # Replace the placeholder with the actual password from secrets
+        sed -i "s|{{ADMIN_PASSWORD_PLACEHOLDER}}|${{ secrets.ADMIN_PASSWORD }}|g" index.html
+        
+        # Verify the replacement worked (without showing the password)
+        if grep -q "{{ADMIN_PASSWORD_PLACEHOLDER}}" index.html; then
+          echo "❌ Password replacement failed!"
+          exit 1
+        else
+          echo "✅ Password placeholder successfully replaced"
+        fi
+    
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+    
+    - name: Build site
+      run: |
+        # Create a build directory
+        mkdir -p build
+        
+        # Copy the processed HTML file
+        cp index.html build/
+        
+        # Copy any additional assets (if you have them)
+        # cp -r assets/ build/ 2>/dev/null || echo "No assets directory found"
+        # cp -r images/ build/ 2>/dev/null || echo "No images directory found"
+        
+        echo "✅ Site built successfully"
+        ls -la build/
+    
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './build'
+    
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+  # Optional: Notify on deployment success
+  notify:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+    - name: Deployment Success
+      run: |
+        echo "🎉 Website deployed successfully!"
+        echo "🔗 URL: ${{ needs.build-and-deploy.outputs.page_url || 'https://yourusername.github.io/your-repo-name' }}"
