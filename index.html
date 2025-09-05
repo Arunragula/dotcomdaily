@@ -317,6 +317,9 @@
             margin-top: auto;
             padding-top: 1rem;
             border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
         
         .content-link {
@@ -340,7 +343,6 @@
             cursor: pointer;
             transition: all 0.3s ease;
             opacity: 0.9;
-            float: right;
         }
         
         .remove-btn:hover { opacity: 1; background: #d8a19e; }
@@ -368,7 +370,9 @@
         .admin-panel, .modal-content { background: var(--secondary-bg); border-color: var(--border-color); color: var(--text-primary); }
         .admin-panel { position: fixed; top: 70px; right: -450px; width: 400px; height: calc(100vh - 70px); backdrop-filter: blur(10px); background: rgba(255,255,255,0.9); border-left: 1px solid var(--border-color); transition: right 0.4s ease; z-index: 1500; padding: 2rem; overflow-y: auto; }
         .admin-panel.open { right: 0; }
-        .form-group input, .form-group textarea, .form-group select { background: var(--primary-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.8rem; color: var(--text-primary); }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; background: var(--primary-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.8rem; color: var(--text-primary); }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent-blue); outline: none; box-shadow: 0 0 0 3px rgba(123, 154, 204, 0.2); }
         .btn { background: var(--accent-blue); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; }
         .btn:hover { background: #6a8ac2; transform: translateY(-2px); }
@@ -765,171 +769,6 @@
             <button type="submit" class="btn" style="margin-top:1rem;"><i class="fas fa-plus"></i> Add</button>
         </form>
         <div id="adminMsg" style="margin-top:1rem;color:#7e7e7e;font-size:0.95rem;"></div>
-        <script>
-            
-            const adminSectionSelect = document.getElementById('adminSectionSelect');
-            const adminImageGroup = document.getElementById('adminImageGroup');
-            const adminPriceGroup = document.getElementById('adminPriceGroup');
-            const adminDescGroup = document.getElementById('adminDescGroup');
-            const adminForm = document.getElementById('adminForm');
-            const adminMsg = document.getElementById('adminMsg');
-            const logoutBtn = document.getElementById('logoutBtn');
-
-            function updateAdminFields() {
-                const section = adminSectionSelect.value;
-                adminImageGroup.style.display = section === 'affiliate' ? '' : 'none';
-                adminPriceGroup.style.display = section === 'affiliate' ? '' : 'none';
-                adminDescGroup.style.display = section === 'affiliate' ? '' : 'none';
-            }
-            adminSectionSelect.addEventListener('change', updateAdminFields);
-            updateAdminFields();
-
-            async function editItem(collection, id) {
-                try {
-                    
-                    const docRef = doc(db, collection, id);
-                    const docSnap = await getDoc(docRef);
-                    
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        
-                        
-                        document.getElementById('adminTitle').value = data.title || '';
-                        document.getElementById('adminUrl').value = data.url || '';
-                        document.getElementById('adminImage').value = data.imageUrl || '';
-                        document.getElementById('adminPrice').value = data.price || '';
-                        document.getElementById('adminDesc').value = data.description || '';
-                        
-                        
-                        document.getElementById('adminSectionSelect').value = collection;
-                        updateAdminFields();
-                        
-                        
-                        const submitBtn = adminForm.querySelector('button[type="submit"]');
-                        submitBtn.innerHTML = '<i class="fas fa-save"></i> Update';
-                        submitBtn.dataset.editId = id;
-                        submitBtn.dataset.editCollection = collection;
-                        
-                        
-                        adminPanel.classList.add('open');
-                    }
-                } catch (error) {
-                    console.error("Error loading item for edit:", error);
-                    alert("Error loading item for edit");
-                }
-            }
-
-            async function deleteItem(collectionName, docId) {
-                if (confirm('Are you sure you want to delete this item?')) {
-                    try {
-                        const docRef = doc(db, collectionName, docId);
-                        await deleteDoc(docRef);
-                        
-                        
-                        adminMsg.textContent = 'Item deleted successfully!';
-                        adminMsg.style.color = 'var(--accent-green)';
-                        
-                        
-                        renderAllContent();
-                    } catch (error) {
-                        console.error("Error deleting document:", error);
-                        adminMsg.textContent = 'Error deleting item: ' + error.message;
-                        adminMsg.style.color = 'var(--accent-pink)';
-                    }
-                }
-            }
-
-            
-            adminForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                adminMsg.textContent = '';
-                
-                const submitBtn = e.target.querySelector('button[type="submit"]');
-                const isEdit = submitBtn.dataset.editId;
-                
-                const section = adminSectionSelect.value;
-                const title = document.getElementById('adminTitle').value.trim();
-                const url = document.getElementById('adminUrl').value.trim();
-                let imageUrl = document.getElementById('adminImage').value.trim();
-                const price = document.getElementById('adminPrice').value.trim();
-                const description = document.getElementById('adminDesc').value.trim();
-
-                try {
-                    
-                    if (!imageUrl) {
-                        
-                        for (const handler of Object.values(urlPreviewHandlers)) {
-                            if (handler.match(url)) {
-                                imageUrl = handler.getImage(url);
-                                break;
-                            }
-                        }
-
-                        
-                        if (!imageUrl) {
-                            try {
-                                const corsProxy = 'https://api.allorigins.win/get?url=';
-                                const response = await fetch(corsProxy + encodeURIComponent(url));
-                                const data = await response.json();
-                                const html = data.contents;
-                                
-                                
-                                const ogMatch = html.match(/<meta[^>]*property="og:image"[^>]*content="([^"]*)"[^>]*>/i);
-                                if (ogMatch) imageUrl = ogMatch[1];
-                                
-                                
-                                if (!imageUrl) {
-                                    const imgMatch = html.match(/<img[^>]*src="([^"]*)"[^>]*>/i);
-                                    if (imgMatch) imageUrl = imgMatch[1];
-                                }
-                            } catch (err) {
-                                console.warn('Error fetching image preview:', err);
-                            }
-                        }
-                    }
-
-                    
-                    const data = {
-                        title,
-                        url,
-                        imageUrl,
-                        timestamp: new Date().toISOString(),
-                        ...(section === 'affiliate' && { price, description })
-                    };
-
-                    if (isEdit) {
-                        
-                        await setDoc(doc(db, submitBtn.dataset.editCollection, isEdit), data);
-                        submitBtn.innerHTML = '<i class="fas fa-plus"></i> Add';
-                        delete submitBtn.dataset.editId;
-                        delete submitBtn.dataset.editCollection;
-                    } else {
-                        // Add new document
-                        await addDoc(collection(db, section), data);
-                    }
-                    
-                    adminMsg.textContent = isEdit ? 'Updated successfully!' : 'Added successfully!';
-                    adminMsg.style.color = 'var(--accent-green)';
-                    adminForm.reset();
-                    updateAdminFields();
-                    renderAllContent();
-                } catch (err) {
-                    adminMsg.textContent = 'Error: ' + err.message;
-                    adminMsg.style.color = 'var(--accent-pink)';
-                }
-            });
-
-            logoutBtn.addEventListener('click', async () => {
-                try {
-                    const { getAuth, signOut } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
-                    const auth = getAuth();
-                    await signOut(auth);
-                    document.getElementById('adminPanel').classList.remove('open');
-                } catch (err) {
-                    alert('Logout failed: ' + err.message);
-                }
-            });
-        </script>
     </div>
 
     <main class="main-content">
@@ -972,7 +811,18 @@
     </main>
 
     <script type="module">
-        
+        // Firebase configuration - you'll need to create this file
+        const firebaseConfig = {
+            apiKey: "AIzaSyAleGDchrgcB8GDjKQGhIovgMUqJIVuZqc",
+            authDomain: "dotcomdaily-479c2.firebaseapp.com",
+            projectId: "dotcomdaily-479c2",
+            storageBucket: "dotcomdaily-479c2.firebasestorage.app",
+            messagingSenderId: "875202957526",
+            appId: "1:875202957526:web:b077f4c99834eb94a27977",
+            measurementId: "G-FGWP8B5X8D"
+        };
+
+        // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { 
             getFirestore, 
@@ -981,10 +831,10 @@
             getDocs, 
             setDoc, 
             doc, 
-            deleteDoc 
+            deleteDoc,
+            getDoc 
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import firebaseConfig from './firebase.config.js';
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -992,17 +842,27 @@
         
         let isAdminAuthenticated = false;
 
+        // DOM elements
         const adminPanel = document.getElementById('adminPanel');
         const adminToggle = document.getElementById('adminToggle');
         const loginModal = document.getElementById('loginModal');
         const mobileMenu = document.getElementById('mobileMenu');
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const adminSectionSelect = document.getElementById('adminSectionSelect');
+        const adminImageGroup = document.getElementById('adminImageGroup');
+        const adminPriceGroup = document.getElementById('adminPriceGroup');
+        const adminDescGroup = document.getElementById('adminDescGroup');
+        const adminForm = document.getElementById('adminForm');
+        const adminMsg = document.getElementById('adminMsg');
+        const logoutBtn = document.getElementById('logoutBtn');
 
+        // Mobile menu toggle
         mobileMenuToggle.addEventListener('click', () => {
             mobileMenu.classList.toggle('active');
             mobileMenuToggle.querySelector('i').className = mobileMenu.classList.contains('active') ? 'fas fa-times' : 'fas fa-bars';
         });
         
+        // Auth state observer
         onAuthStateChanged(auth, user => {
             isAdminAuthenticated = !!user;
             adminToggle.classList.toggle('show', !!user);
@@ -1010,17 +870,22 @@
             renderAllContent();
         });
 
+        // Admin panel controls
         adminToggle.addEventListener('click', () => adminPanel.classList.toggle('open'));
         document.getElementById('logo').addEventListener('click', () => {
-            isAdminAuthenticated ? adminPanel.classList.toggle('open') : loginModal.classList.add('show');
+            if (isAdminAuthenticated) {
+                adminPanel.classList.toggle('open');
+            } else {
+                loginModal.classList.add('show');
+            }
         });
         
+        // Login functionality
         document.getElementById('loginBtn').addEventListener('click', async () => {
-            
-            let loginAttempts = 0;
+            let loginAttempts = parseInt(localStorage.getItem('loginAttempts') || '0');
             const MAX_LOGIN_ATTEMPTS = 3;
             const LOCKOUT_TIME = 30 * 60 * 1000; 
-            let lastLoginAttempt = Date.now();
+            const lastLoginAttempt = parseInt(localStorage.getItem('lastLoginAttempt') || '0');
 
             if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
                 const timeLeft = LOCKOUT_TIME - (Date.now() - lastLoginAttempt);
@@ -1029,6 +894,7 @@
                     return;
                 } else {
                     loginAttempts = 0;
+                    localStorage.setItem('loginAttempts', '0');
                 }
             }
 
@@ -1038,19 +904,19 @@
             try {
                 await signInWithEmailAndPassword(auth, email, password);
                 loginModal.classList.remove('show');
-                loginAttempts = 0;
+                localStorage.setItem('loginAttempts', '0');
             } catch (err) {
                 loginAttempts++;
-                lastLoginAttempt = Date.now();
+                localStorage.setItem('loginAttempts', loginAttempts.toString());
+                localStorage.setItem('lastLoginAttempt', Date.now().toString());
                 alert("Login failed: " + err.message);
             }
         });
         
         document.getElementById('closeLoginBtn').addEventListener('click', () => loginModal.classList.remove('show'));
         
-        
+        // URL preview handlers
         const urlPreviewHandlers = {
-            
             youtube: {
                 match: url => {
                     const patterns = [
@@ -1059,148 +925,312 @@
                     return patterns.some(pattern => pattern.test(url));
                 },
                 getImage: url => {
-                    const videoId = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i)[1];
-                    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                    const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+                    if (match) {
+                        const videoId = match[1];
+                        return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                    }
+                    return '';
                 }
             },
-            
             amazon: {
                 match: url => /amazon\.com.*\/([A-Z0-9]{10})/.test(url),
                 getImage: url => {
-                    const asin = url.match(/amazon\.com.*\/([A-Z0-9]{10})/)[1];
-                    return `https://images-na.ssl-images-amazon.com/images/P/${asin}.01.L.jpg`;
+                    const match = url.match(/amazon\.com.*\/([A-Z0-9]{10})/);
+                    if (match) {
+                        const asin = match[1];
+                        return `https://images-na.ssl-images-amazon.com/images/P/${asin}.01.L.jpg`;
+                    }
+                    return '';
                 }
             }
         };
 
-        const renderContent = (elementId, items, template) => {
-            const grid = document.getElementById(elementId);
-            grid.innerHTML = "";
-            
-            if (items.empty) {
-                grid.innerHTML = `<div class="loading">No items available yet.</div>`;
-                return;
-            }
+        // Admin form field visibility
+        function updateAdminFields() {
+            const section = adminSectionSelect.value;
+            adminImageGroup.style.display = section === 'affiliate' ? '' : 'none';
+            adminPriceGroup.style.display = section === 'affiliate' ? '' : 'none';
+            adminDescGroup.style.display = section === 'affiliate' ? '' : 'none';
+        }
+        adminSectionSelect.addEventListener('change', updateAdminFields);
+        updateAdminFields();
 
-            items.forEach(doc => {
-                const item = doc.data();
-                const docId = Document.id; 
-                grid.innerHTML += template(item, docId);
-            });
+        // Global functions for edit and delete (accessible to onclick handlers)
+        window.editItem = async function(collection, id) {
+            try {
+                const docRef = doc(db, collection, id);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    document.getElementById('adminTitle').value = data.title || '';
+                    document.getElementById('adminUrl').value = data.url || '';
+                    document.getElementById('adminImage').value = data.imageUrl || '';
+                    document.getElementById('adminPrice').value = data.price || '';
+                    document.getElementById('adminDesc').value = data.description || '';
+                    
+                    document.getElementById('adminSectionSelect').value = collection;
+                    updateAdminFields();
+                    
+                    const submitBtn = adminForm.querySelector('button[type="submit"]');
+                    submitBtn.innerHTML = '<i class="fas fa-save"></i> Update';
+                    submitBtn.dataset.editId = id;
+                    submitBtn.dataset.editCollection = collection;
+                    
+                    adminPanel.classList.add('open');
+                }
+            } catch (error) {
+                console.error("Error loading item for edit:", error);
+                alert("Error loading item for edit");
+            }
         };
 
-        
+        window.deleteItem = async function(collectionName, docId) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                try {
+                    const docRef = doc(db, collectionName, docId);
+                    await deleteDoc(docRef);
+                    
+                    adminMsg.textContent = 'Item deleted successfully!';
+                    adminMsg.style.color = 'var(--accent-green)';
+                    
+                    renderAllContent();
+                } catch (error) {
+                    console.error("Error deleting document:", error);
+                    adminMsg.textContent = 'Error deleting item: ' + error.message;
+                    adminMsg.style.color = 'var(--accent-pink)';
+                }
+            }
+        };
+
+        // Admin form submission
+        adminForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            adminMsg.textContent = '';
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const isEdit = submitBtn.dataset.editId;
+            
+            const section = adminSectionSelect.value;
+            const title = document.getElementById('adminTitle').value.trim();
+            const url = document.getElementById('adminUrl').value.trim();
+            let imageUrl = document.getElementById('adminImage').value.trim();
+            const price = document.getElementById('adminPrice').value.trim();
+            const description = document.getElementById('adminDesc').value.trim();
+
+            try {
+                // Auto-generate image URL if not provided
+                if (!imageUrl) {
+                    for (const handler of Object.values(urlPreviewHandlers)) {
+                        if (handler.match(url)) {
+                            imageUrl = handler.getImage(url);
+                            break;
+                        }
+                    }
+
+                    // Fallback: try to fetch from URL
+                    if (!imageUrl) {
+                        try {
+                            const corsProxy = 'https://api.allorigins.win/get?url=';
+                            const response = await fetch(corsProxy + encodeURIComponent(url));
+                            const data = await response.json();
+                            const html = data.contents;
+                            
+                            const ogMatch = html.match(/<meta[^>]*property="og:image"[^>]*content="([^"]*)"[^>]*>/i);
+                            if (ogMatch) imageUrl = ogMatch[1];
+                            
+                            if (!imageUrl) {
+                                const imgMatch = html.match(/<img[^>]*src="([^"]*)"[^>]*>/i);
+                                if (imgMatch) imageUrl = imgMatch[1];
+                            }
+                        } catch (err) {
+                            console.warn('Error fetching image preview:', err);
+                        }
+                    }
+                }
+
+                const data = {
+                    title,
+                    url,
+                    imageUrl,
+                    timestamp: new Date().toISOString(),
+                    ...(section === 'affiliate' && { price, description })
+                };
+
+                if (isEdit) {
+                    await setDoc(doc(db, submitBtn.dataset.editCollection, isEdit), data);
+                    submitBtn.innerHTML = '<i class="fas fa-plus"></i> Add';
+                    delete submitBtn.dataset.editId;
+                    delete submitBtn.dataset.editCollection;
+                } else {
+                    await addDoc(collection(db, section), data);
+                }
+                
+                adminMsg.textContent = isEdit ? 'Updated successfully!' : 'Added successfully!';
+                adminMsg.style.color = 'var(--accent-green)';
+                adminForm.reset();
+                updateAdminFields();
+                renderAllContent();
+            } catch (err) {
+                adminMsg.textContent = 'Error: ' + err.message;
+                adminMsg.style.color = 'var(--accent-pink)';
+            }
+        });
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                adminPanel.classList.remove('open');
+            } catch (err) {
+                alert('Logout failed: ' + err.message);
+            }
+        });
+
+        // Render functions
         const renderAffiliate = async () => {
-            const snap = await getDocs(collection(db, "affiliate"));
-            renderContent("affiliateGrid", snap, (item, id) => `
-                <div class="card deal-card">
-                    ${item.imageUrl ? `
-                        <div class="card-image">
-                            <img src="${item.imageUrl}" alt="${item.title}" 
-                                 onerror="this.src='placeholder.jpg'">
-                        </div>` : ''}
-                    <div class="card-content">
-                        <h3 class="card-title">${item.title}</h3>
-                        ${item.price ? `<div class="card-price">${item.price}</div>` : ''}
-                        <p class="card-description">${item.description || ''}</p>
-                        <div class="card-actions">
-                            <a href="${item.url}" target="_blank" class="deal-btn">
-                                <i class="fas fa-external-link-alt"></i> View Deal
-                            </a>
-                            ${isAdminAuthenticated ? `
-                                <div class="admin-actions">
-                                    <button onclick="editItem('affiliate', '${id}')" class="edit-btn">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button onclick="deleteItem('affiliate', '${id}')" class="remove-btn">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+            const grid = document.getElementById("affiliateGrid");
+            try {
+                const snap = await getDocs(collection(db, "affiliate"));
+                grid.innerHTML = "";
+                
+                if (snap.empty) {
+                    grid.innerHTML = `<div class="loading">No deals available yet.</div>`;
+                    return;
+                }
+
+                snap.forEach(docSnapshot => {
+                    const item = docSnapshot.data();
+                    const docId = docSnapshot.id;
+                    grid.innerHTML += `
+                        <div class="card deal-card">
+                            ${item.imageUrl ? `
+                                <div class="card-image">
+                                    <img src="${item.imageUrl}" alt="${item.title}" 
+                                         onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                                </div>` : ''}
+                            <div class="card-content">
+                                <h3 class="card-title">${item.title}</h3>
+                                ${item.price ? `<div class="card-price">${item.price}</div>` : ''}
+                                <p class="card-description">${item.description || ''}</p>
+                                <div class="card-actions">
+                                    <a href="${item.url}" target="_blank" class="deal-btn">
+                                        <i class="fas fa-external-link-alt"></i> View Deal
+                                    </a>
+                                    ${isAdminAuthenticated ? `
+                                        <div class="admin-actions">
+                                            <button onclick="editItem('affiliate', '${docId}')" class="edit-btn">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button onclick="deleteItem('affiliate', '${docId}')" class="remove-btn">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    ` : ''}
                                 </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                </div>`
-            );
+                            </div>
+                        </div>`;
+                });
+            } catch (error) {
+                console.error("Error loading affiliate data:", error);
+                grid.innerHTML = `<div class="loading">Error loading deals.</div>`;
+            }
         };
 
         const renderBlogs = async () => {
             const grid = document.getElementById("blogGrid");
-            const snap = await getDocs(collection(db, "blogs"));
-            grid.innerHTML = "";
-            if (snap.empty) {
-                grid.innerHTML = `<div class="loading">No blog posts yet.</div>`;
-                return;
+            try {
+                const snap = await getDocs(collection(db, "blogs"));
+                grid.innerHTML = "";
+                
+                if (snap.empty) {
+                    grid.innerHTML = `<div class="loading">No blog posts yet.</div>`;
+                    return;
+                }
+                
+                snap.forEach(docSnapshot => {
+                    const item = docSnapshot.data();
+                    const docId = docSnapshot.id;
+                    grid.innerHTML += `
+                        <div class="card content-card">
+                            <h3 class="card-title">${item.title}</h3>
+                            <div class="card-meta">
+                                <a href="${item.url}" target="_blank" class="content-link">
+                                    Read More <i class="fas fa-arrow-right"></i>
+                                </a>
+                                ${isAdminAuthenticated ? `
+                                    <div class="admin-actions">
+                                        <button onclick="editItem('blogs', '${docId}')" class="edit-btn">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="deleteItem('blogs', '${docId}')" class="remove-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>`;
+                });
+            } catch (error) {
+                console.error("Error loading blog data:", error);
+                grid.innerHTML = `<div class="loading">Error loading blog posts.</div>`;
             }
-            snap.forEach(doc => {
-                const item = doc.data();
-                grid.innerHTML += `
-                    <div class="card content-card">
-                        <h3 class="card-title">${item.title}</h3>
-                        <div class="card-meta">
-                            <a href="${item.url}" target="_blank" class="content-link">
-                                Read More <i class="fas fa-arrow-right"></i>
-                            </a>
-                            ${isAdminAuthenticated ? `
-                                <div class="admin-actions">
-                                    <button onclick="editItem('blogs', '${doc.id}')" class="edit-btn">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button onclick="deleteItem('blogs', '${doc.id}')" class="remove-btn">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>`;
-            });
         };
 
         const renderYouTube = async () => {
             const grid = document.getElementById("youtubeGrid");
-            const snap = await getDocs(collection(db, "youtube"));
-            grid.innerHTML = "";
-            
-            if (snap.empty) {
-                grid.innerHTML = `<div class="loading">No videos yet.</div>`;
-                return;
+            try {
+                const snap = await getDocs(collection(db, "youtube"));
+                grid.innerHTML = "";
+                
+                if (snap.empty) {
+                    grid.innerHTML = `<div class="loading">No videos yet.</div>`;
+                    return;
+                }
+                
+                snap.forEach(docSnapshot => {
+                    const item = docSnapshot.data();
+                    const docId = docSnapshot.id;
+                    grid.innerHTML += `
+                        <div class="card content-card">
+                            <h3 class="card-title">${item.title}</h3>
+                            <div class="card-meta">
+                                <a href="${item.url}" target="_blank" class="content-link">
+                                    Watch Now <i class="fab fa-youtube"></i>
+                                </a>
+                                ${isAdminAuthenticated ? `
+                                    <div class="admin-actions">
+                                        <button onclick="editItem('youtube', '${docId}')" class="edit-btn">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="deleteItem('youtube', '${docId}')" class="remove-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>`;
+                });
+            } catch (error) {
+                console.error("Error loading YouTube data:", error);
+                grid.innerHTML = `<div class="loading">Error loading videos.</div>`;
             }
-            
-            snap.forEach(doc => {
-                const item = doc.data();
-                const docId = doc.id; 
-                grid.innerHTML += `
-                    <div class="card content-card">
-                        <h3 class="card-title">${item.title}</h3>
-                        <div class="card-meta">
-                            <a href="${item.url}" target="_blank" class="content-link">
-                                Watch Now <i class="fab fa-youtube"></i>
-                            </a>
-                            ${isAdminAuthenticated ? `
-                                <div class="admin-actions">
-                                    <button onclick="editItem('youtube', '${docId}')" class="edit-btn">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button onclick="deleteItem('youtube', '${docId}')" class="remove-btn">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>`;
-            });
         };
         
         const renderAllContent = () => {
             renderAffiliate();
             renderBlogs();
             renderYouTube();
-            
         };
 
+        // Initialize content on page load
         document.addEventListener('DOMContentLoaded', renderAllContent);
 
+        // Mobile optimizations
         document.addEventListener('DOMContentLoaded', () => {
-            
+            // Set viewport height for mobile
             const vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
             
@@ -1209,7 +1239,7 @@
                 document.documentElement.style.setProperty('--vh', `${vh}px`);
             });
             
-            
+            // Close mobile menu on link click
             const mobileNavLinks = document.querySelectorAll('.mobile-nav-links a');
             mobileNavLinks.forEach(link => {
                 link.addEventListener('click', () => {
@@ -1218,22 +1248,22 @@
                 });
             });
             
-            
+            // Prevent zoom on input focus (iOS)
             const inputs = document.querySelectorAll('input, select, textarea');
             inputs.forEach(input => {
                 input.style.fontSize = '16px';
             });
             
-            
+            // Add touch feedback
             document.querySelectorAll('.card, .btn, .nav-links a, .social-links a')
                 .forEach(element => {
                     element.addEventListener('touchstart', () => {}, {passive: true});
                 });
         });
 
-        
+        // Auto-logout on inactivity
         let inactivityTimer;
-        const INACTIVE_TIMEOUT = 30 * 60 * 1000; 
+        const INACTIVE_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 
         function resetInactivityTimer() {
             clearTimeout(inactivityTimer);
@@ -1245,7 +1275,7 @@
             }
         }
 
-        
+        // Listen for user activity
         ['click', 'keypress', 'mousemove'].forEach(event => {
             document.addEventListener(event, resetInactivityTimer);
         });
