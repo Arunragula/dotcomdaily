@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4461F2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>.Comdaily - Daily Tech Deals & Content</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #f4f1ea;
+            --secondary-bg: #ffffff;
+            --card-bg: #ffffff;
+            --accent-blue: #7b9acc;
+            --accent-green: #89a67a;
+            --accent-pink: #e4b2b0;
+            --text-primary: #3d3d3d;
+            --text-secondary: #7e7e7e;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            --gradient-primary: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-green) 100%);
+            --header-height: 70px;
+            --container-padding: 1rem;
+        }
+
+        body {
+            font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(244, 241, 234, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 0 1rem;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+            height: var(--header-height);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .social-links a {
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--accent-blue);
+            transform: scale(1.1);
+        }
+
+        .admin-btn {
+            background: var(--accent-blue);
+            border: none;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: none;
+        }
+        
+        .admin-btn.show { display: inline-flex; align-items: center; gap: 0.5rem; }
+
+        .admin-btn:hover {
+            background: #6a8ac2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(123, 154, 204, 0.3);
+        }
+
+        
+        .mobile-menu-toggle { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
+        .mobile-menu { position: fixed; top: var(--header-height); left: 0; right: 0; background: var(--primary-bg); transform: translateY(-120%); transition: transform 0.3s ease; z-index: 999; border-bottom: 1px solid var(--border-color); }
+        .mobile-menu.active { transform: translateY(0); }
+        .mobile-nav-links { display: flex; flex-direction: column; padding: 1rem; gap: 0.5rem; }
+        .mobile-nav-links a { color: var(--text-secondary); text-decoration: none; padding: 1rem; border-radius: 10px; font-weight: 500; }
+        .mobile-nav-links a:hover { color: var(--text-primary); background: rgba(0, 0, 0, 0.05); }
+        .mobile-social-links { display: flex; justify-content: center; gap: 1.5rem; padding: 1rem; border-top: 1px solid var(--border-color); }
+
+
+        
+        .main-content {
+            margin-top: var(--header-height);
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 2rem 1rem;
+        }
+
+        
+        .hero {
+            text-align: center;
+            padding: 5rem 2rem;
+            margin-bottom: 4rem;
+            background: var(--secondary-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            letter-spacing: -1px;
+        }
+        
+        .hero h1 .highlight {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border-color: var(--accent-blue);
+        }
+        
+        
+        .deal-card .card-image {
+            height: 200px;
+            background-color: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .deal-card .card-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .deal-card .card-content {
+            padding: 1.5rem;
+        }
+
+        .deal-card .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .deal-card .card-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 0.8rem;
+        }
+
+        .deal-card .card-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .deal-card .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .deal-btn {
+            background: var(--accent-blue);
+            color: white;
+            text-decoration: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-grow: 1;
+            justify-content: center;
+        }
+        
+        .deal-btn:hover {
+            background: #6a8ac2;
+            transform: translateY(-2px);
+        }
+
+        
+        .content-card {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .content-card .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .content-card .card-meta {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .content-link {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .content-link:hover {
+            text-decoration: underline;
+        }
+        
+        .remove-btn {
+            background: var(--accent-pink);
+            color: white;
+            border: none;
+            padding: 0.3rem 0.7rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.9;
+            float: right;
+        }
+        
+        .remove-btn:hover { opacity: 1; background: #d8a19e; }
+        
+        
+        .donation-section {
+            background: var(--accent-green);
+            border-radius: 20px;
+            padding: 4rem 2rem;
+            text-align: center;
+            margin: 4rem 0;
+            color: white;
+        }
+        
+        .donation-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .donation-subtitle { font-size: 1.1rem; color: rgba(255,255,255,0.9); margin-bottom: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .donation-buttons { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+        .donate-btn { background: rgba(255, 255, 255, 0.2); color: white; text-decoration: none; padding: 1rem 2rem; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; }
+        .donate-btn:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-3px); }
+        .crypto-info { background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 1.5rem; max-width: 300px; margin: 2rem auto 0; }
+        .crypto-address { font-family: monospace; font-size: 0.9rem; word-break: break-all; background: rgba(0, 0, 0, 0.2); padding: 0.5rem; border-radius: 8px; margin-bottom: 1rem; }
+        .qr-code { width: 120px; height: 120px; border-radius: 10px; }
+        
+        
+        .admin-panel, .modal-content { background: var(--secondary-bg); border-color: var(--border-color); color: var(--text-primary); }
+        .admin-panel { position: fixed; top: 70px; right: -450px; width: 400px; height: calc(100vh - 70px); backdrop-filter: blur(10px); background: rgba(255,255,255,0.9); border-left: 1px solid var(--border-color); transition: right 0.4s ease; z-index: 1500; padding: 2rem; overflow-y: auto; }
+        .admin-panel.open { right: 0; }
+        .form-group input, .form-group textarea, .form-group select { background: var(--primary-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.8rem; color: var(--text-primary); }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent-blue); outline: none; box-shadow: 0 0 0 3px rgba(123, 154, 204, 0.2); }
+        .btn { background: var(--accent-blue); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; }
+        .btn:hover { background: #6a8ac2; transform: translateY(-2px); }
+        .btn.danger { background: var(--accent-pink); }
+        .btn.danger:hover { background: #d8a19e; }
+        .login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); z-index: 3000; display: none; align-items: center; justify-content: center; }
+        .login-modal.show { display: flex; }
+        .modal-content { border-radius: 15px; padding: 2.5rem; max-width: 400px; width: 100%; box-shadow: var(--shadow); }
+        .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        
+        
+        .loading { display: flex; justify-content: center; align-items: center; min-height: 200px; color: var(--text-secondary); grid-column: 1 / -1; }
+        .spinner { width: 30px; height: 30px; border: 3px solid var(--border-color); border-top: 3px solid var(--accent-blue); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 1rem; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .mobile-menu-toggle { display: block; }
+            .hero h1 { font-size: 2.5rem; }
+            .section-title { font-size: 1.8rem; }
+            .content-grid { grid-template-columns: 1fr; }
+            .admin-panel { width: 100%; right: -100%; }
+        }
+
+        @media (min-width: 2000px) {
+            .main-content {
+                max-width: 1800px;
+            }
+            
+            .content-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        
+        @media (min-width: 1200px) and (max-width: 1999px) {
+            .content-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        
+        @media (min-width: 992px) and (max-width: 1199px) {
+            :root {
+                --container-padding: 2rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        
+        @media (min-width: 768px) and (max-width: 991px) {
+            :root {
+                --container-padding: 1.5rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .hero {
+                padding: 3rem 1.5rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .donation-section {
+                padding: 3rem 1.5rem;
+            }
+        }
+
+        
+        @media (min-width: 576px) and (max-width: 767px) {
+            :root {
+                --container-padding: 1rem;
+                --header-height: 60px;
+            }
+            
+            .nav-container {
+                height: var(--header-height);
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .hero {
+                padding: 2rem 1rem;
+                margin-bottom: 2rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 0.95rem;
+            }
+            
+            .section {
+                margin-bottom: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .donation-section {
+                padding: 2rem 1rem;
+            }
+            
+            .donation-title {
+                font-size: 1.8rem;
+            }
+            
+            .admin-panel {
+                width: 100%;
+                right: -100%;
+            }
+        }
+
+        
+        @media (max-width: 575px) {
+            :root {
+                --container-padding: 0.8rem;
+                --header-height: 60px;
+            }
+            
+            .logo {
+                font-size: 1.4rem;
+            }
+            
+            .nav-container {
+                height: var(--header-height);
+                padding: 0 0.8rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .hero {
+                padding: 2rem 1rem;
+                margin-bottom: 2rem;
+                border-radius: 15px;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .hero p {
+                font-size: 0.9rem;
+            }
+            
+            .section {
+                margin-bottom: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.4rem;
+                margin-bottom: 1rem;
+            }
+            
+            .card {
+                border-radius: 12px;
+            }
+            
+            .deal-card .card-content {
+                padding: 1rem;
+            }
+            
+            .deal-card .card-title {
+                font-size: 1.1rem;
+            }
+            
+            .deal-card .card-price {
+                font-size: 1.2rem;
+            }
+            
+            .deal-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .donation-section {
+                padding: 2rem 1rem;
+                border-radius: 15px;
+            }
+            
+            .donation-title {
+                font-size: 1.6rem;
+            }
+            
+            .donation-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .donate-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .modal-content {
+                margin: 0.8rem;
+                padding: 1.5rem;
+            }
+            
+            .form-group input {
+                padding: 0.6rem;
+            }
+            
+            .btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        
+        @media (hover: none) {
+            .card:hover {
+                transform: none;
+            }
+            
+            .deal-btn:hover {
+                transform: none;
+            }
+            
+            .donate-btn:hover {
+                transform: none;
+            }
+            
+            .btn:hover {
+                transform: none;
+            }
+        }
+
+       
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            body {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+        }
+
+        
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        
+        .admin-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .edit-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 0.3rem 0.7rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.9;
+        }
+
+        .edit-btn:hover {
+            opacity: 1;
+            background: var(--accent-blue);
+        }
+
+        .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo" id="logo">.Comdaily</div>
+            
+            <div class="nav-menu">
+                <ul class="nav-links">
+                    <li><a href="#deals" class="active"><i class="fas fa-tags"></i> Deals</a></li>
+                    <li><a href="#youtube"><i class="fab fa-youtube"></i> Videos</a></li>
+                    <li><a href="#blog"><i class="fas fa-blog"></i> Blog</a></li>
+                    <li><a href="#donate"><i class="fas fa-heart"></i> Support</a></li>
+                </ul>
+                
+                <div class="social-links">
+                    <a href="https://www.youtube.com/@DotcomDaily" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="https://x.com/dotc0mdaily" target="_blank" title="X"><i class="fab fa-x"></i></a>
+                    <a href="https://www.instagram.com/dotcomdaily2/" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+                
+                <button class="admin-btn" id="adminToggle"><i class="fas fa-cog"></i> Admin</button>
+            </div>
+            
+            <button class="mobile-menu-toggle" id="mobileMenuToggle"><i class="fas fa-bars"></i></button>
+        </nav>
+        
+        <div class="mobile-menu" id="mobileMenu">
+            <div class="mobile-nav-links">
+                <a href="#deals"><i class="fas fa-tags"></i> Deals</a>
+                <a href="#youtube"><i class="fab fa-youtube"></i> Videos</a>
+                <a href="#blog"><i class="fas fa-blog"></i> Blog</a>
+                <a href="#donate"><i class="fas fa-heart"></i> Support</a>
+            </div>
+            <div class="mobile-social-links">
+                <a href="https://www.youtube.com/@DotcomDaily" target="_blank" class="youtube"><i class="fab fa-youtube"></i></a>
+                <a href="https://x.com/dotc0mdaily" target="_blank" class="x"><i class="fab fa-x"></i></a>
+                <a href="https://www.instagram.com/dotcomdaily2" target="_blank" class="instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <div id="loginModal" class="login-modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-lock"></i> Admin Access</h3>
+            <div class="form-group"><label for="email">Email</label><input type="email" id="email"></div>
+            <div class="form-group"><label for="password">Password</label><input type="password" id="password"></div>
+            <div class="modal-buttons">
+                <button id="loginBtn" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <button id="closeLoginBtn" class="btn" style="background: #a0a0a0;"><i class="fas fa-times"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-panel" id="adminPanel">
+        <h2 style="margin-bottom:1.5rem;"><i class="fas fa-cog"></i> Admin Panel</h2>
+        <button id="logoutBtn" class="btn danger" style="float:right;margin-bottom:1.5rem;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <div style="clear:both"></div>
+        <div class="form-group">
+            <label for="adminSectionSelect"><b>Section</b></label>
+            <select id="adminSectionSelect">
+                <option value="affiliate">Deals</option>
+                <option value="youtube">YouTube Videos</option>
+                <option value="blogs">Blog Posts</option>
+            </select>
+        </div>
+        <form id="adminForm" style="margin-top:1.5rem;">
+            <div class="form-group">
+                <label for="adminTitle">Title</label>
+                <input type="text" id="adminTitle" required>
+            </div>
+            <div class="form-group">
+                <label for="adminUrl">URL</label>
+                <input type="url" id="adminUrl" required>
+            </div>
+            <div class="form-group" id="adminImageGroup">
+                <label for="adminImage">Image URL</label>
+                <input type="url" id="adminImage">
+            </div>
+            <div class="form-group" id="adminPriceGroup">
+                <label for="adminPrice">Price</label>
+                <input type="text" id="adminPrice">
+            </div>
+            <div class="form-group" id="adminDescGroup">
+                <label for="adminDesc">Description</label>
+                <textarea id="adminDesc" rows="2"></textarea>
+            </div>
+            <button type="submit" class="btn" style="margin-top:1rem;"><i class="fas fa-plus"></i> Add</button>
+        </form>
+        <div id="adminMsg" style="margin-top:1rem;color:#7e7e7e;font-size:0.95rem;"></div>
+        <script>
+            
+            const adminSectionSelect = document.getElementById('adminSectionSelect');
+            const adminImageGroup = document.getElementById('adminImageGroup');
+            const adminPriceGroup = document.getElementById('adminPriceGroup');
+            const adminDescGroup = document.getElementById('adminDescGroup');
+            const adminForm = document.getElementById('adminForm');
+            const adminMsg = document.getElementById('adminMsg');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            function updateAdminFields() {
+                const section = adminSectionSelect.value;
+                adminImageGroup.style.display = section === 'affiliate' ? '' : 'none';
+                adminPriceGroup.style.display = section === 'affiliate' ? '' : 'none';
+                adminDescGroup.style.display = section === 'affiliate' ? '' : 'none';
+            }
+            adminSectionSelect.addEventListener('change', updateAdminFields);
+            updateAdminFields();
+
+            async function editItem(collection, id) {
+                try {
+                    
+                    const docRef = doc(db, collection, id);
+                    const docSnap = await getDoc(docRef);
+                    
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        
+                        
+                        document.getElementById('adminTitle').value = data.title || '';
+                        document.getElementById('adminUrl').value = data.url || '';
+                        document.getElementById('adminImage').value = data.imageUrl || '';
+                        document.getElementById('adminPrice').value = data.price || '';
+                        document.getElementById('adminDesc').value = data.description || '';
+                        
+                        
+                        document.getElementById('adminSectionSelect').value = collection;
+                        updateAdminFields();
+                        
+                        
+                        const submitBtn = adminForm.querySelector('button[type="submit"]');
+                        submitBtn.innerHTML = '<i class="fas fa-save"></i> Update';
+                        submitBtn.dataset.editId = id;
+                        submitBtn.dataset.editCollection = collection;
+                        
+                        
+                        adminPanel.classList.add('open');
+                    }
+                } catch (error) {
+                    console.error("Error loading item for edit:", error);
+                    alert("Error loading item for edit");
+                }
+            }
+
+            async function deleteItem(collectionName, docId) {
+                if (confirm('Are you sure you want to delete this item?')) {
+                    try {
+                        const docRef = doc(db, collectionName, docId);
+                        await deleteDoc(docRef);
+                        
+                        
+                        adminMsg.textContent = 'Item deleted successfully!';
+                        adminMsg.style.color = 'var(--accent-green)';
+                        
+                        
+                        renderAllContent();
+                    } catch (error) {
+                        console.error("Error deleting document:", error);
+                        adminMsg.textContent = 'Error deleting item: ' + error.message;
+                        adminMsg.style.color = 'var(--accent-pink)';
+                    }
+                }
+            }
+
+            
+            adminForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                adminMsg.textContent = '';
+                
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const isEdit = submitBtn.dataset.editId;
+                
+                const section = adminSectionSelect.value;
+                const title = document.getElementById('adminTitle').value.trim();
+                const url = document.getElementById('adminUrl').value.trim();
+                let imageUrl = document.getElementById('adminImage').value.trim();
+                const price = document.getElementById('adminPrice').value.trim();
+                const description = document.getElementById('adminDesc').value.trim();
+
+                try {
+                    
+                    if (!imageUrl) {
+                        
+                        for (const handler of Object.values(urlPreviewHandlers)) {
+                            if (handler.match(url)) {
+                                imageUrl = handler.getImage(url);
+                                break;
+                            }
+                        }
+
+                        
+                        if (!imageUrl) {
+                            try {
+                                const corsProxy = 'https://api.allorigins.win/get?url=';
+                                const response = await fetch(corsProxy + encodeURIComponent(url));
+                                const data = await response.json();
+                                const html = data.contents;
+                                
+                                
+                                const ogMatch = html.match(/<meta[^>]*property="og:image"[^>]*content="([^"]*)"[^>]*>/i);
+                                if (ogMatch) imageUrl = ogMatch[1];
+                                
+                                
+                                if (!imageUrl) {
+                                    const imgMatch = html.match(/<img[^>]*src="([^"]*)"[^>]*>/i);
+                                    if (imgMatch) imageUrl = imgMatch[1];
+                                }
+                            } catch (err) {
+                                console.warn('Error fetching image preview:', err);
+                            }
+                        }
+                    }
+
+                    
+                    const data = {
+                        title,
+                        url,
+                        imageUrl,
+                        timestamp: new Date().toISOString(),
+                        ...(section === 'affiliate' && { price, description })
+                    };
+
+                    if (isEdit) {
+                        
+                        await setDoc(doc(db, submitBtn.dataset.editCollection, isEdit), data);
+                        submitBtn.innerHTML = '<i class="fas fa-plus"></i> Add';
+                        delete submitBtn.dataset.editId;
+                        delete submitBtn.dataset.editCollection;
+                    } else {
+                        // Add new document
+                        await addDoc(collection(db, section), data);
+                    }
+                    
+                    adminMsg.textContent = isEdit ? 'Updated successfully!' : 'Added successfully!';
+                    adminMsg.style.color = 'var(--accent-green)';
+                    adminForm.reset();
+                    updateAdminFields();
+                    renderAllContent();
+                } catch (err) {
+                    adminMsg.textContent = 'Error: ' + err.message;
+                    adminMsg.style.color = 'var(--accent-pink)';
+                }
+            });
+
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    const { getAuth, signOut } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+                    const auth = getAuth();
+                    await signOut(auth);
+                    document.getElementById('adminPanel').classList.remove('open');
+                } catch (err) {
+                    alert('Logout failed: ' + err.message);
+                }
+            });
+        </script>
+    </div>
+
+    <main class="main-content">
+        <section class="hero">
+            <h1>Welcome to <span class="highlight">.Comdaily</span></h1>
+            <p>Your destination for daily tech deals, exclusive content, and digital insights in a clean, minimal space.</p>
+        </section>
+
+        <section class="section" id="deals">
+            <h2 class="section-title">Hot Deals</h2>
+            <div class="content-grid" id="affiliateGrid">
+                <div class="loading"><div class="spinner"></div><span>Loading amazing deals...</span></div>
+            </div>
+        </section>
+
+        <section class="section" id="youtube">
+            <h2 class="section-title">Latest Videos</h2>
+            <div class="content-grid" id="youtubeGrid">
+                <div class="loading"><div class="spinner"></div><span>Loading video content...</span></div>
+            </div>
+        </section>
+
+        <section class="section" id="blog">
+            <h2 class="section-title">Recent Posts</h2>
+            <div class="content-grid" id="blogGrid">
+                <div class="loading"><div class="spinner"></div><span>Loading blog posts...</span></div>
+            </div>
+        </section>
+
+        <section class="donation-section" id="donate">
+            <div class="donation-content">
+                <h2 class="donation-title"><i class="fas fa-heart"></i> Support My Work</h2>
+                <p class="donation-subtitle">Help me continue creating amazing content. Every contribution makes a difference!</p>
+                <div class="donation-buttons" id="donationBox">
+                    <a href="#" class="donate-btn"><i class="fas fa-coffee"></i> Buy me a coffee</a>
+                    <a href="#" class="donate-btn"><i class="fab fa-paypal"></i> PayPal</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDocs, 
+            setDoc, 
+            doc, 
+            deleteDoc 
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import firebaseConfig from './firebase.config.js';
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        let isAdminAuthenticated = false;
+
+        const adminPanel = document.getElementById('adminPanel');
+        const adminToggle = document.getElementById('adminToggle');
+        const loginModal = document.getElementById('loginModal');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+
+        mobileMenuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            mobileMenuToggle.querySelector('i').className = mobileMenu.classList.contains('active') ? 'fas fa-times' : 'fas fa-bars';
+        });
+        
+        onAuthStateChanged(auth, user => {
+            isAdminAuthenticated = !!user;
+            adminToggle.classList.toggle('show', !!user);
+            if (!user) adminPanel.classList.remove('open');
+            renderAllContent();
+        });
+
+        adminToggle.addEventListener('click', () => adminPanel.classList.toggle('open'));
+        document.getElementById('logo').addEventListener('click', () => {
+            isAdminAuthenticated ? adminPanel.classList.toggle('open') : loginModal.classList.add('show');
+        });
+        
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            
+            let loginAttempts = 0;
+            const MAX_LOGIN_ATTEMPTS = 3;
+            const LOCKOUT_TIME = 30 * 60 * 1000; 
+            let lastLoginAttempt = Date.now();
+
+            if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+                const timeLeft = LOCKOUT_TIME - (Date.now() - lastLoginAttempt);
+                if (timeLeft > 0) {
+                    alert(`Too many login attempts. Please try again in ${Math.ceil(timeLeft/60000)} minutes`);
+                    return;
+                } else {
+                    loginAttempts = 0;
+                }
+            }
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                loginModal.classList.remove('show');
+                loginAttempts = 0;
+            } catch (err) {
+                loginAttempts++;
+                lastLoginAttempt = Date.now();
+                alert("Login failed: " + err.message);
+            }
+        });
+        
+        document.getElementById('closeLoginBtn').addEventListener('click', () => loginModal.classList.remove('show'));
+        
+        
+        const urlPreviewHandlers = {
+            
+            youtube: {
+                match: url => {
+                    const patterns = [
+                        /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i
+                    ];
+                    return patterns.some(pattern => pattern.test(url));
+                },
+                getImage: url => {
+                    const videoId = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i)[1];
+                    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                }
+            },
+            
+            amazon: {
+                match: url => /amazon\.com.*\/([A-Z0-9]{10})/.test(url),
+                getImage: url => {
+                    const asin = url.match(/amazon\.com.*\/([A-Z0-9]{10})/)[1];
+                    return `https://images-na.ssl-images-amazon.com/images/P/${asin}.01.L.jpg`;
+                }
+            }
+        };
+
+        const renderContent = (elementId, items, template) => {
+            const grid = document.getElementById(elementId);
+            grid.innerHTML = "";
+            
+            if (items.empty) {
+                grid.innerHTML = `<div class="loading">No items available yet.</div>`;
+                return;
+            }
+
+            items.forEach(doc => {
+                const item = doc.data();
+                const docId = Document.id; 
+                grid.innerHTML += template(item, docId);
+            });
+        };
+
+        
+        const renderAffiliate = async () => {
+            const snap = await getDocs(collection(db, "affiliate"));
+            renderContent("affiliateGrid", snap, (item, id) => `
+                <div class="card deal-card">
+                    ${item.imageUrl ? `
+                        <div class="card-image">
+                            <img src="${item.imageUrl}" alt="${item.title}" 
+                                 onerror="this.src='placeholder.jpg'">
+                        </div>` : ''}
+                    <div class="card-content">
+                        <h3 class="card-title">${item.title}</h3>
+                        ${item.price ? `<div class="card-price">${item.price}</div>` : ''}
+                        <p class="card-description">${item.description || ''}</p>
+                        <div class="card-actions">
+                            <a href="${item.url}" target="_blank" class="deal-btn">
+                                <i class="fas fa-external-link-alt"></i> View Deal
+                            </a>
+                            ${isAdminAuthenticated ? `
+                                <div class="admin-actions">
+                                    <button onclick="editItem('affiliate', '${id}')" class="edit-btn">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteItem('affiliate', '${id}')" class="remove-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>`
+            );
+        };
+
+        const renderBlogs = async () => {
+            const grid = document.getElementById("blogGrid");
+            const snap = await getDocs(collection(db, "blogs"));
+            grid.innerHTML = "";
+            if (snap.empty) {
+                grid.innerHTML = `<div class="loading">No blog posts yet.</div>`;
+                return;
+            }
+            snap.forEach(doc => {
+                const item = doc.data();
+                grid.innerHTML += `
+                    <div class="card content-card">
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="card-meta">
+                            <a href="${item.url}" target="_blank" class="content-link">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                            ${isAdminAuthenticated ? `
+                                <div class="admin-actions">
+                                    <button onclick="editItem('blogs', '${doc.id}')" class="edit-btn">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteItem('blogs', '${doc.id}')" class="remove-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>`;
+            });
+        };
+
+        const renderYouTube = async () => {
+            const grid = document.getElementById("youtubeGrid");
+            const snap = await getDocs(collection(db, "youtube"));
+            grid.innerHTML = "";
+            
+            if (snap.empty) {
+                grid.innerHTML = `<div class="loading">No videos yet.</div>`;
+                return;
+            }
+            
+            snap.forEach(doc => {
+                const item = doc.data();
+                const docId = doc.id; 
+                grid.innerHTML += `
+                    <div class="card content-card">
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="card-meta">
+                            <a href="${item.url}" target="_blank" class="content-link">
+                                Watch Now <i class="fab fa-youtube"></i>
+                            </a>
+                            ${isAdminAuthenticated ? `
+                                <div class="admin-actions">
+                                    <button onclick="editItem('youtube', '${docId}')" class="edit-btn">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteItem('youtube', '${docId}')" class="remove-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>`;
+            });
+        };
+        
+        const renderAllContent = () => {
+            renderAffiliate();
+            renderBlogs();
+            renderYouTube();
+            
+        };
+
+        document.addEventListener('DOMContentLoaded', renderAllContent);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            
+            window.addEventListener('resize', () => {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            });
+            
+            
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-links a');
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    document.getElementById('mobileMenu').classList.remove('active');
+                    mobileMenuToggle.querySelector('i').className = 'fas fa-bars';
+                });
+            });
+            
+            
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.style.fontSize = '16px';
+            });
+            
+            
+            document.querySelectorAll('.card, .btn, .nav-links a, .social-links a')
+                .forEach(element => {
+                    element.addEventListener('touchstart', () => {}, {passive: true});
+                });
+        });
+
+        
+        let inactivityTimer;
+        const INACTIVE_TIMEOUT = 30 * 60 * 1000; 
+
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            if (isAdminAuthenticated) {
+                inactivityTimer = setTimeout(() => {
+                    signOut(auth);
+                    alert('Session expired due to inactivity');
+                }, INACTIVE_TIMEOUT);
+            }
+        }
+
+        
+        ['click', 'keypress', 'mousemove'].forEach(event => {
+            document.addEventListener(event, resetInactivityTimer);
+        });
+    </script>
+</body>
+</html>
