@@ -205,6 +205,47 @@
             margin-bottom: 2rem;
         }
 
+        /* Category Filter Styles */
+        .category-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .category-btn i {
+            font-size: 1.1rem;
+        }
+
         
         .content-grid {
             display: grid;
@@ -294,6 +335,37 @@
         .deal-btn:hover {
             background: #6a8ac2;
             transform: translateY(-2px);
+        }
+
+        /* Category Badge */
+        .category-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent-blue);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            z-index: 2;
+        }
+
+        .deal-card {
+            position: relative;
+        }
+
+        .deal-card[data-category="mobiles"] .category-badge {
+            background: #ff6b6b;
+        }
+
+        .deal-card[data-category="laptops"] .category-badge {
+            background: #4ecdc4;
+        }
+
+        .deal-card[data-category="rare-tech"] .category-badge {
+            background: #a8e6cf;
+            color: var(--text-primary);
         }
 
         
@@ -396,6 +468,8 @@
             .section-title { font-size: 1.8rem; }
             .content-grid { grid-template-columns: 1fr; }
             .admin-panel { width: 100%; right: -100%; }
+            .category-filters { gap: 0.5rem; }
+            .category-btn { min-width: auto; padding: 0.6rem 1rem; font-size: 0.8rem; }
         }
 
         @media (min-width: 2000px) {
@@ -679,6 +753,11 @@
             align-items: center;
             gap: 0.5rem;
         }
+
+        /* Hidden class for filtering */
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -766,6 +845,14 @@
                 <label for="adminDesc">Description</label>
                 <textarea id="adminDesc" rows="2"></textarea>
             </div>
+            <div class="form-group" id="adminCategoryGroup">
+                <label for="adminCategory">Category</label>
+                <select id="adminCategory">
+                    <option value="mobiles">Mobiles</option>
+                    <option value="laptops">Laptops</option>
+                    <option value="rare-tech">Rare Tech Products</option>
+                </select>
+            </div>
             <button type="submit" class="btn" style="margin-top:1rem;"><i class="fas fa-plus"></i> Add</button>
         </form>
         <div id="adminMsg" style="margin-top:1rem;color:#7e7e7e;font-size:0.95rem;"></div>
@@ -779,6 +866,23 @@
 
         <section class="section" id="deals">
             <h2 class="section-title">Hot Deals</h2>
+            
+            <!-- Category Filter Buttons -->
+            <div class="category-filters">
+                <button class="category-btn active" data-category="all">
+                    <i class="fas fa-th-large"></i> All Products
+                </button>
+                <button class="category-btn" data-category="mobiles">
+                    <i class="fas fa-mobile-alt"></i> Mobiles
+                </button>
+                <button class="category-btn" data-category="laptops">
+                    <i class="fas fa-laptop"></i> Laptops
+                </button>
+                <button class="category-btn" data-category="rare-tech">
+                    <i class="fas fa-gem"></i> Rare Tech
+                </button>
+            </div>
+            
             <div class="content-grid" id="affiliateGrid">
                 <div class="loading"><div class="spinner"></div><span>Loading amazing deals...</span></div>
             </div>
@@ -841,6 +945,7 @@
         const auth = getAuth(app);
         
         let isAdminAuthenticated = false;
+        let currentCategory = 'all';
 
         // DOM elements
         const adminPanel = document.getElementById('adminPanel');
@@ -852,6 +957,7 @@
         const adminImageGroup = document.getElementById('adminImageGroup');
         const adminPriceGroup = document.getElementById('adminPriceGroup');
         const adminDescGroup = document.getElementById('adminDescGroup');
+        const adminCategoryGroup = document.getElementById('adminCategoryGroup');
         const adminForm = document.getElementById('adminForm');
         const adminMsg = document.getElementById('adminMsg');
         const logoutBtn = document.getElementById('logoutBtn');
@@ -861,6 +967,39 @@
             mobileMenu.classList.toggle('active');
             mobileMenuToggle.querySelector('i').className = mobileMenu.classList.contains('active') ? 'fas fa-times' : 'fas fa-bars';
         });
+
+        // Category filter functionality
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        categoryButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                categoryButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update current category
+                currentCategory = btn.dataset.category;
+                
+                // Filter products
+                filterProducts();
+            });
+        });
+
+        function filterProducts() {
+            const dealCards = document.querySelectorAll('.deal-card');
+            
+            dealCards.forEach(card => {
+                if (currentCategory === 'all') {
+                    card.classList.remove('hidden');
+                } else {
+                    const cardCategory = card.dataset.category;
+                    if (cardCategory === currentCategory) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                }
+            });
+        }
         
         // Auth state observer
         onAuthStateChanged(auth, user => {
@@ -952,6 +1091,7 @@
             adminImageGroup.style.display = section === 'affiliate' ? '' : 'none';
             adminPriceGroup.style.display = section === 'affiliate' ? '' : 'none';
             adminDescGroup.style.display = section === 'affiliate' ? '' : 'none';
+            adminCategoryGroup.style.display = section === 'affiliate' ? '' : 'none';
         }
         adminSectionSelect.addEventListener('change', updateAdminFields);
         updateAdminFields();
@@ -970,6 +1110,7 @@
                     document.getElementById('adminImage').value = data.imageUrl || '';
                     document.getElementById('adminPrice').value = data.price || '';
                     document.getElementById('adminDesc').value = data.description || '';
+                    document.getElementById('adminCategory').value = data.category || 'mobiles';
                     
                     document.getElementById('adminSectionSelect').value = collection;
                     updateAdminFields();
@@ -1019,6 +1160,7 @@
             let imageUrl = document.getElementById('adminImage').value.trim();
             const price = document.getElementById('adminPrice').value.trim();
             const description = document.getElementById('adminDesc').value.trim();
+            const category = document.getElementById('adminCategory').value;
 
             try {
                 // Auto-generate image URL if not provided
@@ -1056,7 +1198,7 @@
                     url,
                     imageUrl,
                     timestamp: new Date().toISOString(),
-                    ...(section === 'affiliate' && { price, description })
+                    ...(section === 'affiliate' && { price, description, category })
                 };
 
                 if (isEdit) {
@@ -1104,8 +1246,18 @@
                 snap.forEach(docSnapshot => {
                     const item = docSnapshot.data();
                     const docId = docSnapshot.id;
+                    const category = item.category || 'mobiles';
+                    
+                    // Get category display name
+                    const categoryNames = {
+                        'mobiles': 'Mobile',
+                        'laptops': 'Laptop',
+                        'rare-tech': 'Rare Tech'
+                    };
+                    
                     grid.innerHTML += `
-                        <div class="card deal-card">
+                        <div class="card deal-card" data-category="${category}">
+                            <div class="category-badge">${categoryNames[category]}</div>
                             ${item.imageUrl ? `
                                 <div class="card-image">
                                     <img src="${item.imageUrl}" alt="${item.title}" 
@@ -1133,6 +1285,10 @@
                             </div>
                         </div>`;
                 });
+                
+                // Apply current filter after rendering
+                setTimeout(filterProducts, 100);
+                
             } catch (error) {
                 console.error("Error loading affiliate data:", error);
                 grid.innerHTML = `<div class="loading">Error loading deals.</div>`;
